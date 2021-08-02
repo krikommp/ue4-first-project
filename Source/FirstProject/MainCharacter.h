@@ -6,11 +6,18 @@
 #include "GameFramework/Character.h"
 #include "MainCharacter.generated.h"
 
+UENUM(BlueprintType)
+enum class EMovementStatus : uint8 {
+	EMS_Normal UMETA(DisplayName = "Normal"),
+	EMS_Spring UMETA(DisplayName = "Spring"),
+
+	EMX_MAX UMETA(DisplayName = "DefaultMax")
+};
+
 UCLASS()
 class FIRSTPROJECT_API AMainCharacter : public ACharacter
 {
 	GENERATED_BODY()
-
 public:
 	// Sets default values for this character's properties
 	AMainCharacter();
@@ -46,7 +53,19 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Stats")
 	int32 Coins;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Running")
+	float RunningSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Running")
+	float SpringSpeed;
 #pragma endregion PlayerStats
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Enums")
+	EMovementStatus MovementStatus;
+
+private:
+	bool bShiftKeyDown;
 
 protected:
 	// Called when the game starts or when spawned
@@ -58,6 +77,14 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	void DecrementHealth(float Damage);
+
+	void IncrementCoins(int32 Coins);
+
+	void Die();
+
+	void SetMovementStatus(EMovementStatus Status);
 
 private:
 	/**
@@ -73,6 +100,10 @@ private:
 	void TurnAtRate(float fRate);
 
 	void LookUpRate(float fRate);
+
+	void ShiftKeyDown();
+
+	void ShiftKeyUp();
 
 	FORCEINLINE class USpringArmComponent* GetSpringArmComponent() const { return CameraBoom; }
 	FORCEINLINE class UCameraComponent* GetCamera() const { return FollowCamera; }

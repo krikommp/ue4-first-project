@@ -47,6 +47,11 @@ AMainCharacter::AMainCharacter()
 	MaxStamina = 350.f;
 	Stamina = 120.f;
 	Coins = 0;
+
+	RunningSpeed = 650.f;
+	SpringSpeed = 900.f;
+
+	bShiftKeyDown = false;
 }
 
 // Called when the game starts or when spawned
@@ -71,6 +76,9 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
+	PlayerInputComponent->BindAction("Spring", IE_Pressed, this, &AMainCharacter::ShiftKeyDown);
+	PlayerInputComponent->BindAction("Spring", IE_Released, this, &AMainCharacter::ShiftKeyUp);
+
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMainCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMainCharacter::MoveRight);
 
@@ -79,8 +87,6 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 	PlayerInputComponent->BindAxis("TurnRate", this, &AMainCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookupRate", this, &AMainCharacter::LookUpRate);
-
-
 }
 
 void AMainCharacter::MoveForward(float fValue) {
@@ -113,3 +119,38 @@ void AMainCharacter::LookUpRate(float fRate) {
 	AddControllerPitchInput(fRate * BaseLookupRate * GetWorld()->GetDeltaSeconds());
 }
 
+void AMainCharacter::DecrementHealth(float Damage) {
+	if (Health - Damage <= 0.f) {
+		Health -= Damage;
+		Die();
+	}
+	else {
+		Health -= Damage;
+	}
+}
+
+void AMainCharacter::IncrementCoins(int32 Amount) {
+	Coins += Amount;
+}
+
+void AMainCharacter::Die() {
+
+}
+
+void AMainCharacter::SetMovementStatus(EMovementStatus Status) {
+	MovementStatus = Status;
+	if (MovementStatus == EMovementStatus::EMS_Spring) {
+		GetCharacterMovement()->MaxWalkSpeed = SpringSpeed;
+	}
+	else {
+		GetCharacterMovement()->MaxWalkSpeed = RunningSpeed;
+	}
+}
+
+void AMainCharacter::ShiftKeyDown() {
+	bShiftKeyDown = true;
+}
+
+void AMainCharacter::ShiftKeyUp() {
+	bShiftKeyDown = false;
+}
