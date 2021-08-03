@@ -14,6 +14,28 @@ enum class EMovementStatus : uint8 {
 	EMX_MAX UMETA(DisplayName = "DefaultMax")
 };
 
+UENUM(BlueprintType)
+enum class EStaminaStatus : uint8 {
+	/**
+	 * 正常
+	 */
+	ESS_Normal UMETA(DisplayName = "Normal"),
+	/**
+	 * 在低标准下
+	 */
+	ESS_BelowMinimum UMETA(DisplayName = "BelowMininum"),
+	/**
+	 * 耗尽
+	 */
+	ESS_Exhausted UMETA(DisplayName = "Exhausted"),
+	/**
+	 * 耗尽回复
+	 */
+	ESS_ExhaustedRecovering UMETA(DisplayName = "ExhaustedRecovering"),
+
+	ESS_MAX UMETA(DisplayName = "Default")
+};
+
 UCLASS()
 class FIRSTPROJECT_API AMainCharacter : public ACharacter
 {
@@ -59,13 +81,23 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Running")
 	float SpringSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float StaminaDrainRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float MinSpringStamina;
+
 #pragma endregion PlayerStats
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Enums")
 	EMovementStatus MovementStatus;
 
-private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Enums")
+	EStaminaStatus StaminaStatus;
+public:
 	bool bShiftKeyDown;
+	
 
 protected:
 	// Called when the game starts or when spawned
@@ -107,4 +139,5 @@ private:
 
 	FORCEINLINE class USpringArmComponent* GetSpringArmComponent() const { return CameraBoom; }
 	FORCEINLINE class UCameraComponent* GetCamera() const { return FollowCamera; }
+	FORCEINLINE void SetStaminaStatus(EStaminaStatus Status) { StaminaStatus = Status; }
 };
