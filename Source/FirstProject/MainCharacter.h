@@ -59,6 +59,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseLookupRate;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Item)
+	class AWeapon* EquipWeapon;
+
 
 #pragma region PlayerStats
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Player Stats")
@@ -140,4 +143,5 @@ private:
 	FORCEINLINE class USpringArmComponent* GetSpringArmComponent() const { return CameraBoom; }
 	FORCEINLINE class UCameraComponent* GetCamera() const { return FollowCamera; }
 	FORCEINLINE void SetStaminaStatus(EStaminaStatus Status) { StaminaStatus = Status; }
+	FORCEINLINE void SetEquipWeapon(class AWeapon* WeaponToSet) { EquipWeapon = WeaponToSet; }
 };
