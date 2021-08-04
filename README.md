@@ -230,5 +230,7 @@
    
      `UGameplayStatics::PlaySound2D(this, OverlapSound);`
    
-   - 
+   - 如何隐藏一个组件
+   
+     `Component->Deactivate()`
 

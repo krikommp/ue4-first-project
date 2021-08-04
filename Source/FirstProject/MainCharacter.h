@@ -62,6 +62,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Item)
 	class AWeapon* EquipWeapon;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Item)
+	class AItem* ActiveOverlapWeapon;
 
 #pragma region PlayerStats
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Player Stats")
@@ -101,6 +103,7 @@ public:
 public:
 	bool bShiftKeyDown;
 	
+	bool bLMBDown;
 
 protected:
 	// Called when the game starts or when spawned
@@ -121,6 +124,12 @@ public:
 
 	void SetMovementStatus(EMovementStatus Status);
 
+	FORCEINLINE class USpringArmComponent* GetSpringArmComponent() const { return CameraBoom; }
+	FORCEINLINE class UCameraComponent* GetCamera() const { return FollowCamera; }
+	FORCEINLINE void SetStaminaStatus(EStaminaStatus Status) { StaminaStatus = Status; }
+	void SetEquipWeapon(class AWeapon* WeaponToSet);
+	FORCEINLINE AWeapon* GetEquipWeapon() const { return EquipWeapon; }
+	FORCEINLINE void SetActiveOverlapWeapon(class AItem* ItemToSet) { ActiveOverlapWeapon = ItemToSet; }
 private:
 	/**
 	 * 前进后退事件
@@ -140,8 +149,7 @@ private:
 
 	void ShiftKeyUp();
 
-	FORCEINLINE class USpringArmComponent* GetSpringArmComponent() const { return CameraBoom; }
-	FORCEINLINE class UCameraComponent* GetCamera() const { return FollowCamera; }
-	FORCEINLINE void SetStaminaStatus(EStaminaStatus Status) { StaminaStatus = Status; }
-	FORCEINLINE void SetEquipWeapon(class AWeapon* WeaponToSet) { EquipWeapon = WeaponToSet; }
+	void LMBDown();
+
+	void LMBUp();
 };

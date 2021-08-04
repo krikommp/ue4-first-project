@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "Engine/World.h"
 #include "Components/CapsuleComponent.h"
+#include "Weapon.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -52,6 +53,7 @@ AMainCharacter::AMainCharacter()
 	SpringSpeed = 900.f;
 
 	bShiftKeyDown = false;
+	bLMBDown = false;
 
 	// initialize Status
 	MovementStatus = EMovementStatus::EMS_Normal;
@@ -156,6 +158,9 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction("Spring", IE_Pressed, this, &AMainCharacter::ShiftKeyDown);
 	PlayerInputComponent->BindAction("Spring", IE_Released, this, &AMainCharacter::ShiftKeyUp);
 
+	PlayerInputComponent->BindAction("LMB", IE_Pressed, this, &AMainCharacter::LMBDown);
+	PlayerInputComponent->BindAction("LMB", IE_Released, this, &AMainCharacter::LMBUp);
+
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMainCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMainCharacter::MoveRight);
 
@@ -230,4 +235,25 @@ void AMainCharacter::ShiftKeyDown() {
 
 void AMainCharacter::ShiftKeyUp() {
 	bShiftKeyDown = false;
+}
+
+void AMainCharacter::LMBDown() {
+	bLMBDown = true;
+	if (ActiveOverlapWeapon) {
+		AWeapon* Weapon = Cast<AWeapon>(ActiveOverlapWeapon);
+		if (Weapon) {
+			Weapon->EquipWeapon(this);
+		}
+	}
+}
+
+void AMainCharacter::LMBUp() {
+	bLMBDown = false;
+}
+
+void AMainCharacter::SetEquipWeapon(AWeapon* WeaponToSet) {
+	if (EquipWeapon) {
+		EquipWeapon->Destroy();
+	}
+	EquipWeapon = WeaponToSet;
 }
