@@ -272,6 +272,7 @@ void AMainCharacter::SetEquipWeapon(AWeapon* WeaponToSet) {
 
 void AMainCharacter::Attack() {
 	if (!bAttacking) {
+		bAttacking = true;
 		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 		if (AnimInstance) {
 			UE_LOG(LogTemp, Warning, TEXT("Attack Index = %d"), AttackIndex);
