@@ -63,6 +63,8 @@ AMainCharacter::AMainCharacter()
 
 	StaminaDrainRate = 25.f;
 	MinSpringStamina = 50.f;
+
+	AttackIndex = 0;
 }
 
 // Called when the game starts or when spawned
@@ -269,21 +271,24 @@ void AMainCharacter::SetEquipWeapon(AWeapon* WeaponToSet) {
 }
 
 void AMainCharacter::Attack() {
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance && CombatMontage) {
-		if (AnimInstance->Montage_IsPlaying(CombatMontage)) {
-			FName currentSections = AnimInstance->Montage_GetCurrentSection(CombatMontage);
-			if (currentSections.ToString().Contains(FString("ComboWindow"))) {
-				AnimInstance->Montage_SetNextSection(currentSections, "Attack_2", CombatMontage);
+	if (!bAttacking) {
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		if (AnimInstance) {
+			UE_LOG(LogTemp, Warning, TEXT("Attack Index = %d"), AttackIndex);
+			if (AttackIndex > CombatMontages.Num()) {
+				AttackIndex = 0;
 			}
-		}
-		else {
-			AnimInstance->Montage_Play(CombatMontage, 1.35f);
-			AnimInstance->Montage_JumpToSection(FName("Attack_1"), CombatMontage);
+			AnimInstance->Montage_Play(CombatMontages[AttackIndex]);
+			++AttackIndex;
 		}
 	}
 }
 
-void AMainCharacter::AttackEnd() {
+void AMainCharacter::SaveAttack() {
 	bAttacking = false;
+}
+
+void AMainCharacter::ResetAttack() {
+	bAttacking = false;
+	AttackIndex = 0;
 }

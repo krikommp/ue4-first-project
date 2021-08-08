@@ -112,10 +112,16 @@ public:
 	void Attack();
 
 	UFUNCTION(BlueprintCallable)
-	void AttackEnd();
+	void SaveAttack();
+
+	UFUNCTION(BlueprintCallable)
+	void ResetAttack();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Anims")
-	class UAnimMontage* CombatMontage;
+	TArray<class UAnimMontage*> CombatMontages;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Anims")
+	int AttackIndex;
 
 protected:
 	// Called when the game starts or when spawned
