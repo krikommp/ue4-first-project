@@ -107,7 +107,7 @@
 
      上面的参数针对蓝图中Collision的信息
 
-     ![Collision](\image\collision_msg.png)
+     ![Collision](.\image\collision_msg.png)
 
      > Collision Enable : 碰撞类型。只触发碰撞和是否进行物理计算
      >
@@ -127,13 +127,13 @@
      >
      > 目前使用第一个Float, 按住Shift点击界面可以创建一个节点
      >
-     > ![Timeline_vertical_horizontal](\image\Timeline_vertical_horizontal.png)
+     > ![Timeline_vertical_horizontal](.\image\Timeline_vertical_horizontal.png)
      >
      > 点击上图按钮可以显示过大的节点（有些节点值比较大，可能超出屏幕，这时点击这两个按钮适配显示）
      >
      > 按住Shift同时点击设置的节点可以设置线性关系（线性/曲线）
      >
-     > ![Timeline_Viewport](\image\Timeline_Viewport.png)
+     > ![Timeline_Viewport](.\image\Timeline_Viewport.png)
      >
      > Play：开始Timeline
      >
@@ -143,7 +143,7 @@
      >
      > Reverse：反向计算值，并且会调用Update函数
      >
-     > 勾选“User Last Keyframe”表示使用时间轴最后一个关键帧所在时间点作为结束时间，而不是使用设置的![Timeline_Use_Last_Keyframe](\image\Timeline_Use_Last_Keyframe.png)5秒作为结束时间点。
+     > 勾选“User Last Keyframe”表示使用时间轴最后一个关键帧所在时间点作为结束时间，而不是使用设置的![Timeline_Use_Last_Keyframe](.\image\Timeline_Use_Last_Keyframe.png)5秒作为结束时间点。
    
    - `TSubclassOf<class ACritter>` 
    
@@ -197,15 +197,15 @@
    
      在蓝图中可以直接调用该函数（类似于`BlueprintCallable`），如下图
    
-     ![BlueprintNativeEvent_1](\image\BlueprintNativeEvent_1.png)
+     ![BlueprintNativeEvent_1](.\image\BlueprintNativeEvent_1.png)
    
      同时也会产生一个Event事件（类似于使用了`BlueprintImplementableEvent`），当这个上图函数被调用的时候就会触发这个事件，同时我们就可以根据这个事件来重写我们的c++函数，如下图所示。
    
-     ![BlueprintNativeEvent_2](\image\BlueprintNativeEvent_2.png)
+     ![BlueprintNativeEvent_2](.\image\BlueprintNativeEvent_2.png)
    
      此时右键该Event，选择`Add call to parent function`可以使用蓝图父类即c++中的代码来重写函数（类似于Super::ParentFunction()）,如下图所示。
    
-     ![BlueprintNativeEvent_3](\image\BlueprintNativeEvent_3.png)
+     ![BlueprintNativeEvent_3](.\image\BlueprintNativeEvent_3.png)
    
    - meta
    
@@ -233,4 +233,18 @@
    - 如何隐藏一个组件
    
      `Component->Deactivate()`
+   
+   - 在ue4中如果对一个空指针进行操作，将会引起引擎crash
+   
+     ```C++
+     bRotate = false;
+     Character->GetEquipWeapon()->Destroy();
+     RightHandSocket->AttachActor(this, Character->GetMesh());
+     Character->SetEquipWeapon(this);
+     Character->SetActiveOverlapWeapon(nullptr);
+     ```
+   
+     如上图，Destory的时候没有检查这个指针是否为空值。
+   
+   - 
 

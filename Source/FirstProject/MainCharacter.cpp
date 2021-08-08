@@ -225,7 +225,12 @@ void AMainCharacter::SetMovementStatus(EMovementStatus Status) {
 		GetCharacterMovement()->MaxWalkSpeed = SpringSpeed;
 	}
 	else {
-		GetCharacterMovement()->MaxWalkSpeed = RunningSpeed;
+		if (EquipWeapon != nullptr) {
+			GetCharacterMovement()->MaxWalkSpeed = RunningSpeed / 2.;
+		}
+		else {
+			GetCharacterMovement()->MaxWalkSpeed = RunningSpeed;
+		}
 	}
 }
 
