@@ -8,6 +8,8 @@
 #include "Engine/World.h"
 #include "Components/CapsuleComponent.h"
 #include "Weapon.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Animation/AnimInstance.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -172,7 +174,7 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 }
 
 void AMainCharacter::MoveForward(float fValue) {
-	if (Controller != nullptr && fValue != 0.f) {
+	if (Controller != nullptr && fValue != 0.f && (!bAttacking)) {
 		// 找到前方向
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
@@ -183,7 +185,7 @@ void AMainCharacter::MoveForward(float fValue) {
 }
 
 void AMainCharacter::MoveRight(float fValue) {
-	if (Controller != nullptr && fValue != 0.f) {
+	if (Controller != nullptr && fValue != 0.f && (!bAttacking)) {
 		// 找到前方向
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
@@ -250,6 +252,9 @@ void AMainCharacter::LMBDown() {
 			Weapon->EquipWeapon(this);
 		}
 	}
+	else if (EquipWeapon) {
+		Attack();
+	}
 }
 
 void AMainCharacter::LMBUp() {
@@ -261,4 +266,24 @@ void AMainCharacter::SetEquipWeapon(AWeapon* WeaponToSet) {
 		EquipWeapon->Destroy();
 	}
 	EquipWeapon = WeaponToSet;
+}
+
+void AMainCharacter::Attack() {
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && CombatMontage) {
+		if (AnimInstance->Montage_IsPlaying(CombatMontage)) {
+			FName currentSections = AnimInstance->Montage_GetCurrentSection(CombatMontage);
+			if (currentSections.ToString().Contains(FString("ComboWindow"))) {
+				AnimInstance->Montage_SetNextSection(currentSections, "Attack_2", CombatMontage);
+			}
+		}
+		else {
+			AnimInstance->Montage_Play(CombatMontage, 1.35f);
+			AnimInstance->Montage_JumpToSection(FName("Attack_1"), CombatMontage);
+		}
+	}
+}
+
+void AMainCharacter::AttackEnd() {
+	bAttacking = false;
 }

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include <stack>
 #include "MainCharacter.generated.h"
 
 UENUM(BlueprintType)
@@ -104,6 +105,17 @@ public:
 	bool bShiftKeyDown;
 	
 	bool bLMBDown;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Anims")
+	bool bAttacking;
+
+	void Attack();
+
+	UFUNCTION(BlueprintCallable)
+	void AttackEnd();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Anims")
+	class UAnimMontage* CombatMontage;
 
 protected:
 	// Called when the game starts or when spawned
