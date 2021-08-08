@@ -276,10 +276,11 @@ void AMainCharacter::Attack() {
 		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 		if (AnimInstance) {
 			UE_LOG(LogTemp, Warning, TEXT("Attack Index = %d"), AttackIndex);
-			if (AttackIndex > CombatMontages.Num()) {
+			if (AttackIndex >= CombatMontages.Num()) {
 				AttackIndex = 0;
 			}
-			AnimInstance->Montage_Play(CombatMontages[AttackIndex]);
+			auto currentMontage = CombatMontages[AttackIndex];
+			AnimInstance->Montage_Play(currentMontage);
 			++AttackIndex;
 		}
 	}
