@@ -123,6 +123,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Anims")
 	int AttackIndex;
 
+	class UAnimMontage* CacheMontage;
+
+	class UAnimMontage* CurrentMontage;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

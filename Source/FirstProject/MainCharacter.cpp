@@ -65,6 +65,8 @@ AMainCharacter::AMainCharacter()
 	MinSpringStamina = 50.f;
 
 	AttackIndex = 0;
+
+	CacheMontage = nullptr;
 }
 
 // Called when the game starts or when spawned
@@ -271,17 +273,43 @@ void AMainCharacter::SetEquipWeapon(AWeapon* WeaponToSet) {
 }
 
 void AMainCharacter::Attack() {
-	if (!bAttacking) {
-		bAttacking = true;
-		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-		if (AnimInstance) {
-			UE_LOG(LogTemp, Warning, TEXT("Attack Index = %d"), AttackIndex);
-			if (AttackIndex >= CombatMontages.Num()) {
-				AttackIndex = 0;
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance) {
+		if (CurrentMontage == nullptr) {
+			AttackIndex = 0;
+			bAttacking = true;
+			CurrentMontage = CombatMontages[AttackIndex];
+			AnimInstance->Montage_Play(CurrentMontage);
+		}
+		else {
+			if (AnimInstance->Montage_IsPlaying(CurrentMontage)) {
+				auto sectionName = AnimInstance->Montage_GetCurrentSection(CurrentMontage);
+				if (sectionName.ToString().Contains("ComboWindow")) {
+					// 连击缓存窗口，这时候应该缓存攻击事件，等待当前攻击结束，播放缓存的攻击动作
+					if (CacheMontage == nullptr) {
+						// 判断是否已经有缓存了，如果有就不需要缓存，等待动画结束播放即可
+						// 如果没有缓存，就移动到下一个动作，并更新缓存
+						++AttackIndex;
+						if (AttackIndex >= CombatMontages.Num()) {
+							AttackIndex = 0;
+						}
+						UE_LOG(LogTemp, Warning, TEXT("Combo Window Next Index = %d"), AttackIndex);
+						CacheMontage = CombatMontages[AttackIndex];
+					}
+				}
+				else if (sectionName.ToString().Contains("FadeOut")) {
+					// 动作后摇窗口，此时如果点击，那么就会立即播放下一个动作，取消前一个动作的后摇
+					if (CacheMontage == nullptr) {
+						++AttackIndex;
+						if (AttackIndex >= CombatMontages.Num()) {
+							AttackIndex = 0;
+						}
+						CurrentMontage = CombatMontages[AttackIndex];
+						bAttacking = true;
+						AnimInstance->Montage_Play(CurrentMontage);
+					}
+				}
 			}
-			auto currentMontage = CombatMontages[AttackIndex];
-			AnimInstance->Montage_Play(currentMontage);
-			++AttackIndex;
 		}
 	}
 }
@@ -291,6 +319,18 @@ void AMainCharacter::SaveAttack() {
 }
 
 void AMainCharacter::ResetAttack() {
-	bAttacking = false;
-	AttackIndex = 0;
+	if (CacheMontage) {
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		if (AnimInstance) {
+			bAttacking = true;
+			AnimInstance->Montage_Play(CacheMontage);
+			CurrentMontage = CacheMontage;
+			CacheMontage = nullptr;
+		}
+	}
+	else {
+		CurrentMontage = nullptr;
+		bAttacking = false;
+		AttackIndex = 0;
+	}
 }
